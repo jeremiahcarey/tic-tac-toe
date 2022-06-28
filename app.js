@@ -12,7 +12,14 @@ const Player = (name, symbol) => {
     let getName = () => name;
     let getSymbol = () => symbol;
     return { getName, getSymbol };
+
 }
+
+const playerOne = Player("Player One", "X");
+const playerTwo = Player("Player Two", "O");
+
+let currentPlayer = playerOne;
+
 
 
 
@@ -25,27 +32,32 @@ const gameControl = (() => {
             }
         })
     };
+    const playerSwitch = () => {
+        if (currentPlayer === playerOne) {
+            currentPlayer = playerTwo;
+        } else {
+            currentPlayer = playerOne;
+        }
+    };
     const gamePlay = () => {
         gameSquares.forEach((square) => {
             square.addEventListener("click", function (e) {
-                e.target.children[0].innerText = `${currentPlayer.getSymbol()}`;
-                gameBoard.boardArray[e.target.dataset.index] = `${currentPlayer.getSymbol()}`;
-                updateGameDisplay();
-                if (currentPlayer = playerOne) {
-                    let currentPlayer = playerTwo;
-                } else {
-                    let currentPlayer = playerOne;
+                if (e.target.classList.contains("game-square") && !gameBoard.boardArray[e.target.dataset.index]) {
+                    e.target.children[0].innerText = `${currentPlayer.getSymbol()}`;
+                    gameBoard.boardArray[e.target.dataset.index] = `${currentPlayer.getSymbol()}`;
+                    updateGameDisplay();
+                    playerSwitch();
                 };
             });
         });
-    }
+    };
 
     return { gameSquares, updateGameDisplay, gamePlay }
 })();
 
-const playerOne = Player("Player One", "X");
-const playerTwo = Player("Player Two", "O");
-let currentPlayer = playerTwo;
+
+
+
 gameControl.updateGameDisplay();
 gameControl.gamePlay();
 
