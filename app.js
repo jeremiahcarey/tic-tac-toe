@@ -3,7 +3,7 @@ const aiEasyBtn = document.querySelector("#ai-btn-easy");
 const aiHardBtn = document.querySelector("#ai-btn-hard");
 const controlContentDiv = document.querySelector(".control-content");
 const controlContentDefault = document.querySelector(".control-content").innerHTML;
-const twoPlayerFormHTML = `<form id="two-player-names" action="action = " javascript:void(0);" >
+const twoPlayerFormHTML = `<form id="two-player-names" >
 <div>
     <label for="player-one-name">Player one name?</label>
     <input class="input" type="text" id="player-one-name" name="player-one-name" required>
@@ -14,9 +14,9 @@ const twoPlayerFormHTML = `<form id="two-player-names" action="action = " javasc
 </div>
 <button id="two-player-start-btn" type="submit">Start Play</button>
 </form >`
-const twoPlayerForm = document.querySelector("#two-player-names");
-const playerOneInput = document.querySelector("#player-one-name");
-const playerTwoInput = document.querySelector("#player-two-name");
+let twoPlayerForm = document.querySelector("#two-player-names");
+let playerOneInput = document.querySelector("#player-one-name");
+let playerTwoInput = document.querySelector("#player-two-name");
 
 
 // twoPlayerBtn.addEventListener("click", ()=> {
@@ -38,7 +38,7 @@ const gameBoard = (() => {
     // menu controls
 
 
-    return { boardArray, possibleWins };
+    return { boardArray, possibleWins, };
 })();
 
 const Player = (name, symbol) => {
@@ -59,6 +59,11 @@ const gameControl = (() => {
         gameBoard.boardArray.forEach((square, index) => {
             if (square) {
                 gameSquares[index].children[0].innerText = `${square}`;
+            } else {
+                gameSquares[index].children[0].innerText = "";
+                gameSquares[index].classList.remove("winning-square");
+                gameSquares[index].classList.remove("squares-tied");
+                gameSquares[index].classList.remove("no-hover");
             }
         })
     };
@@ -72,21 +77,73 @@ const gameControl = (() => {
     const checkForWin = (currentPlays) => {
         for (const possibility of gameBoard.possibleWins) {
             if (possibility.every(squareIndex => { return currentPlays.includes(squareIndex) })) {
-                console.log(`${currentPlayer.getName()} wins!`);
                 for (const squareIndex of possibility) {
                     gameSquares[squareIndex].classList.add("winning-square");
                 }
                 gameSquares.forEach(square => {
                     square.classList.add("no-hover");
+
                 });
+                controlContentDiv.innerHTML = `
+                <h1>${currentPlayer.getName()} wins!</h1>
+                <button type="button" id="play-again-btn">Play Again</button>
+                `;
+                document.querySelector("#play-again-btn").addEventListener("click", () => {
+                    gameBoard.boardArray = [null, null, null,
+                        null, null, null,
+                        null, null, null];
+                    playerOne = "";
+                    playerTwo = "";
+                    updateGameDisplay();
+                    controlContentDiv.innerHTML = twoPlayerFormHTML;
+                    twoPlayerForm = document.querySelector("#two-player-names");
+                    playerOneInput = document.querySelector("#player-one-name");
+                    playerTwoInput = document.querySelector("#player-two-name");
+                    gameControl.twoPlayerFormListener();
+
+                })
+                return true;
             } else if (gameBoard.boardArray.every(space => space !== null)) {
                 gameSquares.forEach(square => {
                     square.classList.add("squares-tied");
                     square.classList.add("no-hover");
+
                 })
+                controlContentDiv.innerHTML = `
+                    <h1>It's a draw!</h1>
+                    <button type="button" id="play-again-btn">Play Again</button>
+                    `;
+                document.querySelector("#play-again-btn").addEventListener("click", () => {
+                    gameBoard.boardArray = [null, null, null,
+                        null, null, null,
+                        null, null, null];
+                    playerOne = "";
+                    playerTwo = "";
+                    updateGameDisplay();
+                    controlContentDiv.innerHTML = twoPlayerFormHTML;
+                    twoPlayerForm = document.querySelector("#two-player-names");
+                    playerOneInput = document.querySelector("#player-one-name");
+                    playerTwoInput = document.querySelector("#player-two-name");
+                    gameControl.twoPlayerFormListener();
+
+                })
+                return true;
             }
-        }
+        };
+
     }
+    const twoPlayerFormListener = () => {
+        twoPlayerForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const playerOneName = playerOneInput.value;
+            const playerTwoName = playerTwoInput.value;
+            playerOne = Player(playerOneName, "X");
+            playerTwo = Player(playerTwoName, "O");
+            currentPlayer = playerOne;
+            controlContentDiv.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`
+            gameControl.gamePlay();
+        })
+    };
     const gamePlay = () => {
         gameSquares.forEach((square) => {
             square.addEventListener("click", function (e) {
@@ -98,25 +155,19 @@ const gameControl = (() => {
                             return index;
                         }
                     }).filter(square => square >= 0);
-                    checkForWin(currentPlays);
                     updateGameDisplay();
+                    if (checkForWin(currentPlays)) {
+                        return;
+                    };
                     playerSwitch();
+                    controlContentDiv.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
                 };
             });
         });
     };
 
-    return { gameSquares, updateGameDisplay, gamePlay }
+    return { gameSquares, updateGameDisplay, gamePlay, twoPlayerFormListener }
 })();
 
 
-twoPlayerForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const playerOneName = playerOneInput.value;
-    const playerTwoName = playerTwoInput.value;
-    playerOne = Player(playerOneName, "X");
-    playerTwo = Player(playerTwoName, "O");
-    currentPlayer = playerOne;
-    controlContentDiv.innerHTML = "";
-    gameControl.gamePlay();
-})
+gameControl.twoPlayerFormListener();
