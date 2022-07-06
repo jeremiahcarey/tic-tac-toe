@@ -5,6 +5,9 @@
     --gameboard-border-color: #062726;
     --main-txt-color: white;
     --light-txt-shadow: #d5afe5;
+    --winning-spaces-bg: #0E8A86;
+    --controls-bg: #E2CFEA;
+    --tied-squares-bg: #06a4c0;
 }
 
 body {
@@ -25,9 +28,47 @@ body {
 }
 
 .gameboard-container {
-    width: 27em;
+    width: 45em;
     height: 27em;
     margin: auto;
+    display: flex;
+}
+
+.controls {
+    width: 18em;
+    height: 27em;
+    background-color: var(--controls-bg);
+    border: 9px solid var(--gameboard-border-color);
+    color: var(--main-bg-color);
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.control-content {
+    display: flex;
+    flex-direction: column;
+    padding-top: 4em;
+}
+
+.control-content button {
+    width: 13em;
+    padding: 0.5em;
+    margin: 1em;
+    border: solid 1px black;
+    border-radius: 0.5em;
+    background-color: var(--gameboard-bg-color);
+    color: white;
+}
+
+.control-content button:hover {
+    box-shadow: 0 0 2px black;
+}
+
+.gameboard {
+    width: 27em;
+    height: 27em;
     box-shadow: 3px 7px 20px 3px rgba(0, 0, 0, 0.59);
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -54,4 +95,32 @@ body {
     font-size: 5em;
     user-select: none;
     text-shadow: 1px 0 10px var(--light-txt-shadow);
+}
+
+.winning-square {
+    background-color: var(--winning-spaces-bg);
+    transform: scale(1.1);
+}
+
+.squares-tied {
+    background-color: var(--tied-squares-bg);
+    transform: scale(1.1);
+}
+
+.no-hover {
+    pointer-events: none;
+}
+
+.control-content input {
+    padding: 0.5em;
+    margin: 0.5em;
+    width: 15em;
+    border: 1px solid var(--gameboard-bg-hover);
+    border-radius: 0.33em;
+}
+
+.control-content input:focus {
+    outline: none;
+    border: 1px solid var(--gameboard-bg-color);
+    box-shadow: 0 0 5px var(--gameboard-bg-color);
 }

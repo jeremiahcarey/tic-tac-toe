@@ -17,32 +17,49 @@
         <h1>Let's Play Tic-Tac-Toe!</h1>
     </div>
     <div class="gameboard-container">
-        <div class="game-square top left-side" data-index="0" id="square-zero">
-            <div class="game-square-text"></div>
+        <div class="controls">
+            <div class="control-content">
+                <form id="two-player-names" action="action=" javascript:void(0);">
+                    <div>
+                        <label for="player-one-name">Player one name?</label>
+                        <input class="input" type="text" id="player-one-name" name="player-one-name" required>
+                    </div>
+                    <div>
+                        <label for="player-two-name">Player two name?</label>
+                        <input class="input" type="text" id="player-two-name" name="player-two-name" required>
+                    </div>
+                    <button id="two-player-start-btn" type="submit">Start Play</button>
+                </form>
+            </div>
         </div>
-        <div class="game-square top middle" data-index="1" id="square-one">
-            <div class="game-square-text"></div>
-        </div>
-        <div class="game-square top right-side" data-index="2" id="square-two">
-            <div class="game-square-text"></div>
-        </div>
-        <div class="game-square center left-side" data-index="3" id="square-three">
-            <div class="game-square-text"></div>
-        </div>
-        <div class="game-square center middle" data-index="4" id="square-four">
-            <div class="game-square-text"></div>
-        </div>
-        <div class="game-square center right-side" data-index="5" id="square-five">
-            <div class="game-square-text"></div>
-        </div>
-        <div class="game-square bottom left-side" data-index="6" id="square-six">
-            <div class="game-square-text"></div>
-        </div>
-        <div class="game-square bottom middle" data-index="7" id="square-seven">
-            <div class="game-square-text"></div>
-        </div>
-        <div class="game-square bottom right-side" data-index="8" id="square-eight">
-            <div class="game-square-text"></div>
+        <div class="gameboard">
+            <div class="game-square top left-side" data-index="0" id="square-zero">
+                <div class="game-square-text"></div>
+            </div>
+            <div class="game-square top middle" data-index="1" id="square-one">
+                <div class="game-square-text"></div>
+            </div>
+            <div class="game-square top right-side" data-index="2" id="square-two">
+                <div class="game-square-text"></div>
+            </div>
+            <div class="game-square center left-side" data-index="3" id="square-three">
+                <div class="game-square-text"></div>
+            </div>
+            <div class="game-square center middle" data-index="4" id="square-four">
+                <div class="game-square-text"></div>
+            </div>
+            <div class="game-square center right-side" data-index="5" id="square-five">
+                <div class="game-square-text"></div>
+            </div>
+            <div class="game-square bottom left-side" data-index="6" id="square-six">
+                <div class="game-square-text"></div>
+            </div>
+            <div class="game-square bottom middle" data-index="7" id="square-seven">
+                <div class="game-square-text"></div>
+            </div>
+            <div class="game-square bottom right-side" data-index="8" id="square-eight">
+                <div class="game-square-text"></div>
+            </div>
         </div>
     </div>
 
@@ -50,3 +67,8 @@
 </body>
 
 </html>
+
+<!-- <h1>Ready to Play?</h1>
+<button type="button" id="two-player-btn">Two Player</button>
+<button type="button" id="ai-btn-easy">Play Computer (Easy)</button>
+<button type="button" id="ai-btn-hard">Play Computer (Hard)</button> -->
