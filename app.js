@@ -1,53 +1,42 @@
-const twoPlayerBtn = document.querySelector("#two-player-btn");
-const aiEasyBtn = document.querySelector("#ai-btn-easy");
-const aiHardBtn = document.querySelector("#ai-btn-hard");
-const controlContentDiv = document.querySelector(".control-content");
-const controlContentDefault = document.querySelector(".control-content").innerHTML;
-const twoPlayerFormHTML = `<form id="two-player-names" >
-<div>
-    <label for="player-one-name">Player one name?</label>
-    <input class="input" type="text" id="player-one-name" name="player-one-name" required>
-</div>
-<div>
-    <label for="player-two-name">Player two name?</label>
-    <input class="input" type="text" id="player-two-name" name="player-two-name" required>
-</div>
-<button id="two-player-start-btn" type="submit">Start Play</button>
-</form >`
-let twoPlayerForm = document.querySelector("#two-player-names");
-let playerOneInput = document.querySelector("#player-one-name");
-let playerTwoInput = document.querySelector("#player-two-name");
-
-
-let playerOne;
-let playerTwo;
-let currentPlayer;
-
 
 const gameBoard = (() => {
-    // gameboard info
     const boardArray = [null, null, null,
         null, null, null,
         null, null, null];
     const possibleWins = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
-
-    // menu controls
-
-
     return { boardArray, possibleWins, };
 })();
+
 
 const Player = (name, symbol) => {
     let getName = () => name;
     let getSymbol = () => symbol;
     return { getName, getSymbol };
-
-}
-
+};
 
 
 const gameControl = (() => {
+    let playerOne;
+    let playerTwo;
+    let currentPlayer;
     const gameSquares = document.querySelectorAll(".game-square");
+    const controlContentDiv = document.querySelector(".control-content");
+    const controlContentDefault = document.querySelector(".control-content").innerHTML;
+    const twoPlayerFormHTML = `<form id="two-player-names" >
+    <div>
+     <label for="player-one-name">Player one name?</label>
+     <input class="input" type="text" id="player-one-name" name="player-one-name" required>
+    </div>
+    <div>
+     <label for="player-two-name">Player two name?</label>
+     <input class="input" type="text" id="player-two-name" name="player-two-name" required>
+    </div>
+    <button id="two-player-start-btn" type="submit">Start Play</button>
+    </form >`
+    let twoPlayerForm = document.querySelector("#two-player-names");
+    let playerOneInput = document.querySelector("#player-one-name");
+    let playerTwoInput = document.querySelector("#player-two-name");
+
     const updateGameDisplay = () => {
         gameBoard.boardArray.forEach((square, index) => {
             if (square) {
