@@ -19,17 +19,37 @@
     <div class="gameboard-container">
         <div class="controls">
             <div class="control-content">
-                <form id="two-player-names">
-                    <div>
-                        <label for="player-one-name">Player one name?</label>
-                        <input class="input" type="text" id="player-one-name" name="player-one-name" required>
-                    </div>
-                    <div>
-                        <label for="player-two-name">Player two name?</label>
-                        <input class="input" type="text" id="player-two-name" name="player-two-name" required>
-                    </div>
-                    <button id="two-player-start-btn" type="submit">Start Play</button>
-                </form>
+                <div class="play-select-menu">
+                    <h1>How would you like to play?</h1>
+                    <button id="two-player-btn" type="button">Two Player</button>
+                    <button id="computer-easy-btn" type="button">vs Computer (Easy)</button>
+                    <button id="computer-hard-btn" type="buton">vs Computer (Hard!)</button>
+                </div>
+                <div class="announcements">
+
+                </div>
+                <div class="two-player-form">
+                    <form id="two-player-names" class="names-form">
+                        <div>
+                            <label for="player-one-name">Player one name?</label>
+                            <input class="input" type="text" id="player-one-name" name="player-one-name" required>
+                        </div>
+                        <div>
+                            <label for="player-two-name">Player two name?</label>
+                            <input class="input" type="text" id="player-two-name" name="player-two-name" required>
+                        </div>
+                        <button id="two-player-start-btn" type="submit">Start Play</button>
+                    </form>
+                </div>
+                <div class="against-computer-form">
+                    <form id="one-player-name" class="names-form">
+                        <div>
+                            <label for="player-name">Player name?</label>
+                            <input class="input" type="text" id="player-name" name="player-name" required>
+                        </div>
+                        <button id="one-player-start-btn" type="submit">Start Play</button>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="gameboard">

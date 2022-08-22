@@ -124,3 +124,17 @@ body {
     border: 1px solid var(--gameboard-bg-color);
     box-shadow: 0 0 5px var(--gameboard-bg-color);
 }
+
+.play-select-menu {}
+
+.two-player-form {
+    display: none;
+}
+
+.against-computer-form {
+    display: none;
+}
+
+.announcements {
+    display: none;
+}

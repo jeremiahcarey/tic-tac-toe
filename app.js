@@ -17,22 +17,16 @@ const Player = (name, symbol) => {
 
 const gameControl = (() => {
     let playerOne;
-    let playerTwo;
+    let playerTwo
     let currentPlayer;
     const gameSquares = document.querySelectorAll(".game-square");
     const controlContentDiv = document.querySelector(".control-content");
-    const controlContentDefault = document.querySelector(".control-content").innerHTML;
-    const twoPlayerFormHTML = `<form id="two-player-names" >
-    <div>
-     <label for="player-one-name">Player one name?</label>
-     <input class="input" type="text" id="player-one-name" name="player-one-name" required>
-    </div>
-    <div>
-     <label for="player-two-name">Player two name?</label>
-     <input class="input" type="text" id="player-two-name" name="player-two-name" required>
-    </div>
-    <button id="two-player-start-btn" type="submit">Start Play</button>
-    </form >`
+    const announcements = document.querySelector(".announcements");
+    const playSelectMenu = document.querySelector(".play-select-menu")
+    const twoPlayerBtn = document.querySelector("#two-player-btn");
+    const onePlayerEasyBtn = document.querySelector("#computer-easy-btn");
+    const twoPlayerHardBtn = document.querySelector("#computer-hard-btn");
+    const twoPlayerFormDiv = document.querySelector(".two-player-form");
     let twoPlayerForm = document.querySelector("#two-player-names");
     let playerOneInput = document.querySelector("#player-one-name");
     let playerTwoInput = document.querySelector("#player-two-name");
@@ -61,20 +55,28 @@ const gameControl = (() => {
             currentPlayer = playerOne;
         }
     };
-    const twoPlayerFormListener = () => {
+    const eventListeners = () => {
+        twoPlayerBtn.addEventListener("click", () => {
+            playSelectMenu.style.display = "none";
+            twoPlayerFormDiv.style.display = "block";
+
+        });
         twoPlayerForm.addEventListener("submit", (e) => {
             e.preventDefault();
             const playerOneName = playerOneInput.value;
             const playerTwoName = playerTwoInput.value;
-            playerOne = Player(playerOneName, "X");
-            playerTwo = Player(playerTwoName, "O");
+            const firstPlayer = Player(playerOneName, "X");
+            const secondPlayer = Player(playerTwoName, "O");
+            playerOne = firstPlayer;
+            playerTwo = secondPlayer;
+            twoPlayerForm.reset();
             currentPlayer = playerOne;
             gameSquares.forEach((square) => {
                 square.classList.remove("no-hover");
             });
-            controlContentDiv.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
+            announcements.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
             gameControl.gamePlay();
-        })
+        });
     };
     const checkForWin = (currentPlays) => {
         for (const possibility of gameBoard.possibleWins) {
@@ -86,20 +88,14 @@ const gameControl = (() => {
                     square.classList.add("no-hover");
 
                 });
-                controlContentDiv.innerHTML = `
+                announcements.innerHTML = `
                 <h1>${currentPlayer.getName()} wins!</h1>
                 <button type="button" id="play-again-btn">Play Again</button>
                 `;
                 document.querySelector("#play-again-btn").addEventListener("click", () => {
-
-                    playerOne = "";
-                    playerTwo = "";
                     clearBoard();
-                    controlContentDiv.innerHTML = twoPlayerFormHTML;
-                    twoPlayerForm = document.querySelector("#two-player-names");
-                    playerOneInput = document.querySelector("#player-one-name");
-                    playerTwoInput = document.querySelector("#player-two-name");
-                    gameControl.twoPlayerFormListener();
+                    announcements.style.display = "none";
+                    playSelectMenu.style.display = "block";
                 })
                 return true;
             } else if (gameBoard.boardArray.every(space => space !== null)) {
@@ -107,7 +103,7 @@ const gameControl = (() => {
                     square.classList.add("squares-tied");
                     square.classList.add("no-hover");
                 })
-                controlContentDiv.innerHTML = `
+                announcements.innerHTML = `
                     <h1>It's a draw!</h1>
                     <button type="button" id="play-again-btn">Play Again</button>
                     `;
@@ -115,14 +111,9 @@ const gameControl = (() => {
                     gameBoard.boardArray = [null, null, null,
                         null, null, null,
                         null, null, null];
-                    playerOne = "";
-                    playerTwo = "";
                     clearBoard();
-                    controlContentDiv.innerHTML = twoPlayerFormHTML;
-                    twoPlayerForm = document.querySelector("#two-player-names");
-                    playerOneInput = document.querySelector("#player-one-name");
-                    playerTwoInput = document.querySelector("#player-two-name");
-                    gameControl.twoPlayerFormListener();
+                    announcements.style.display = "none";
+                    playSelectMenu.style.display = "block";
                 })
                 return true;
             }
@@ -130,6 +121,8 @@ const gameControl = (() => {
 
     }
     const gamePlay = () => {
+        twoPlayerFormDiv.style.display = "none";
+        announcements.style.display = "block";
         gameSquares.forEach((square) => {
             square.addEventListener("click", function (e) {
                 if (e.target.classList.contains("game-square") && !gameBoard.boardArray[e.target.dataset.index]) {
@@ -145,14 +138,14 @@ const gameControl = (() => {
                         return;
                     };
                     playerSwitch();
-                    controlContentDiv.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
+                    announcements.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
                 };
             });
         });
     };
 
-    return { gameSquares, updateGameDisplay, gamePlay, twoPlayerFormListener }
+    return { gameSquares, updateGameDisplay, gamePlay, eventListeners }
 })();
 
 
-gameControl.twoPlayerFormListener();
+gameControl.eventListeners();
