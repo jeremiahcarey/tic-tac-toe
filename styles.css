@@ -131,7 +131,11 @@ body {
     display: none;
 }
 
-.against-computer-form {
+.against-computer-form-hard {
+    display: none;
+}
+
+.against-computer-form-easy {
     display: none;
 }
 
