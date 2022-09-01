@@ -45,7 +45,8 @@
                     <form id="one-player-easy-name" class="names-form">
                         <div>
                             <label for="player-name-easy">Player name?</label>
-                            <input class="input" type="text" id="player-name-easy" name="player-name" required>
+                            <input class="input" type="text" id="player-name-easy" name="player-name"
+                                pattern="^((?!Computer).)*$" title="Please choose any other name" required>
                         </div>
                         <button id="one-player-easy-start-btn" type="submit">Start Play</button>
                     </form>
@@ -54,7 +55,8 @@
                     <form id="one-player-hard-name" class="names-form">
                         <div>
                             <label for="player-name-hard">Player name?</label>
-                            <input class="input" type="text" id="player-name-hard" name="player-name" required>
+                            <input class="input" type="text" id="player-name-hard" name="player-name"
+                                pattern="^((?!Computer).)*$" title="Please choose any other name" required>
                         </div>
                         <button id="one-player-hard-start-btn" type="submit">Start Play</button>
                     </form>
