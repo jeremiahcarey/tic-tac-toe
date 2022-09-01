@@ -1,3 +1,3 @@
 # tic-tac-toe
 
-Built as part of The Odin Project, the main purpose of this project, in addition to building the tic-tac-toe game, was to practice using factory functions and module patterns and housing the logic of the game appropriately within those objects.
+Built as part of The Odin Project, the main purpose of this project, in addition to building a basic tic-tac-toe game, was to practice using factory functions and module patterns and housing the logic of the game appropriately within those objects.  As "extra" credit, two AI players were also built.  The first simply plays a random open spot.  The second uses an implementation of the minimax algorithm to pick the best spot, making it unbeatable in a fair game.

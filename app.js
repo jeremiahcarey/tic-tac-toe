@@ -19,9 +19,7 @@ const gameControl = (() => {
     let playerOne;
     let playerTwo
     let currentPlayer;
-    let winOrDraw;
     const gameSquares = document.querySelectorAll(".game-square");
-    const controlContentDiv = document.querySelector(".control-content");
     const announcements = document.querySelector(".announcements");
     const playSelectMenu = document.querySelector(".play-select-menu")
     const twoPlayerBtn = document.querySelector("#two-player-btn");
@@ -31,9 +29,12 @@ const gameControl = (() => {
     const onePlayerEasyFormDiv = document.querySelector(".against-computer-form-easy");
     const twoPlayerForm = document.querySelector("#two-player-names");
     const onePlayerEasyForm = document.querySelector("#one-player-easy-name");
+    const onePlayerHardForm = document.querySelector("#one-player-hard-name");
+    const onePlayerHardFormDiv = document.querySelector(".against-computer-form-hard");
     const playerOneInput = document.querySelector("#player-one-name");
     const playerTwoInput = document.querySelector("#player-two-name");
     const playerEasyInput = document.querySelector("#player-name-easy");
+    const playerHardInput = document.querySelector("#player-name-hard");
 
     const updateGameDisplay = () => {
         gameBoard.boardArray.forEach((square, index) => {
@@ -100,90 +101,213 @@ const gameControl = (() => {
             announcements.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
             gamePlayOnePlayerEasy();
         });
+        onePlayerHardBtn.addEventListener("click", () => {
+            playSelectMenu.style.display = "none";
+            onePlayerHardFormDiv.style.display = "block";
+        })
+        onePlayerHardForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const playerOneName = playerHardInput.value;
+            const playerTwoName = "Computer"
+            const firstPlayer = Player(playerOneName, "X");
+            const secondPlayer = Player(playerTwoName, "O");
+            playerOne = firstPlayer;
+            playerTwo = secondPlayer;
+            onePlayerHardForm.reset();
+            currentPlayer = playerOne;
+            gameSquares.forEach((square) => {
+                square.classList.remove("no-hover");
+            });
+            announcements.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
+            gamePlayOnePlayerHard();
+        })
     };
 
-    const checkForWin = (currentPlays) => {
+    const announceWin = () => {
+        const currentPlays = gameBoard.boardArray.map((square, index) => {
+            if (square === currentPlayer.getSymbol()) {
+                return index;
+            }
+        });
         for (const possibility of gameBoard.possibleWins) {
             if (possibility.every(squareIndex => { return currentPlays.includes(squareIndex) })) {
                 for (const squareIndex of possibility) {
                     gameSquares[squareIndex].classList.add("winning-square");
                 }
-                gameSquares.forEach(square => {
-                    square.classList.add("no-hover");
-                });
-                announcements.innerHTML = `
-                <h1>${currentPlayer.getName()} wins!</h1>
-                <button type="button" id="play-again-btn">Play Again</button>
-                `;
-                document.querySelector("#play-again-btn").addEventListener("click", () => {
-                    clearBoard();
-                    announcements.style.display = "none";
-                    playSelectMenu.style.display = "block";
-                    winOrDraw = false;
-                })
-                winOrDraw = true;
             }
         };
-        if (winOrDraw !== true && gameBoard.boardArray.every(space => space !== null)) {
-            gameSquares.forEach(square => {
-                square.classList.add("squares-tied");
-                square.classList.add("no-hover");
-            })
-            announcements.innerHTML = `
-                    <h1>It's a draw!</h1>
-                    <button type="button" id="play-again-btn">Play Again</button>
-                    `;
-            document.querySelector("#play-again-btn").addEventListener("click", () => {
-                clearBoard();
-                announcements.style.display = "none";
-                playSelectMenu.style.display = "block";
-                winOrDraw = false;
-            })
-            winOrDraw = true;
-        }
+        gameSquares.forEach(square => {
+            square.classList.add("no-hover");
+        });
+        announcements.innerHTML = `
+    <h1>${currentPlayer.getName()} wins!</h1>
+    <button type="button" id="play-again-btn">Play Again</button>
+    `;
+        document.querySelector("#play-again-btn").addEventListener("click", () => {
+            clearBoard();
+            announcements.style.display = "none";
+            playSelectMenu.style.display = "block";
+        })
     };
+
+    const announceDraw = () => {
+        gameSquares.forEach(square => {
+            square.classList.add("squares-tied");
+            square.classList.add("no-hover");
+        })
+        announcements.innerHTML = `
+                <h1>It's a draw!</h1>
+                <button type="button" id="play-again-btn">Play Again</button>
+                `;
+        document.querySelector("#play-again-btn").addEventListener("click", () => {
+            clearBoard();
+            announcements.style.display = "none";
+            playSelectMenu.style.display = "block";
+        })
+    }
+
+    const checkForWin = (boardState, player) => {
+        const playerPlays = [];
+        boardState.forEach((element, index) => {
+            if (element === player.getSymbol()) {
+                playerPlays.push(index);
+            }
+        });
+        for (const possibility of gameBoard.possibleWins) {
+            if (possibility.every(squareIndex => { return playerPlays.includes(squareIndex) })) {
+                return true;
+            };
+        }
+    }
+
+    const checkForDraw = (boardState) => {
+        if (boardState.every(space => space !== null)) {
+            return true;
+        }
+    }
+
+    const minimax = (board, player) => {
+        if (checkForWin(board, playerTwo)) {
+            return { score: 10 };
+        } else if (checkForWin(board, playerOne)) {
+            return { score: -10 };
+        } else if (checkForDraw(board)) {
+            return { score: 0 };
+        }
+
+        let allMoves = [];
+        for (let i = 0; i < board.length; i++) {
+            let currentMove = {};
+            if (board[i] === null) {
+                currentMove.index = i;
+                board[i] = player.getSymbol();
+
+                if (player === playerTwo) {
+                    let result = minimax(board, playerOne);
+                    currentMove.score = result.score;
+                } else {
+                    let result = minimax(board, playerTwo);
+                    currentMove.score = result.score;
+                }
+
+                board[i] = null;
+
+                allMoves.push(currentMove);
+            }
+        }
+
+        let bestMove;
+        if (player === playerTwo) {
+            let bestScore = -Infinity;
+            for (let i = 0; i < allMoves.length; i++) {
+                if (allMoves[i].score > bestScore) {
+                    bestScore = allMoves[i].score;
+                    bestMove = i;
+                }
+            }
+        } else {
+            let bestScore = Infinity;
+            for (let i = 0; i < allMoves.length; i++) {
+                if (allMoves[i].score < bestScore) {
+                    bestScore = allMoves[i].score;
+                    bestMove = i;
+                }
+            }
+        }
+        return allMoves[bestMove];
+    }
+
+    const bestSpot = () => {
+        return minimax(gameBoard.boardArray, playerTwo).index;
+    }
 
 
     const playerPlayVComputerEasy = (e) => {
         if (e.target.classList.contains("game-square") && currentPlayer.getName() !== "Computer" && !gameBoard.boardArray[e.target.dataset.index]) {
-            e.target.children[0].innerText = `${currentPlayer.getSymbol()}`;
+            e.target.children[0].innerText = currentPlayer.getSymbol();
             gameBoard.boardArray[e.target.dataset.index] = `${currentPlayer.getSymbol()}`;
-            const currentPlays = gameBoard.boardArray.map((square, index) => {
-                if (square === `${currentPlayer.getSymbol()}`) {
-                    return index;
-                }
-            }).filter(square => square >= 0);
             updateGameDisplay();
-            checkForWin(currentPlays);
-            if (winOrDraw === true) {
+            if (checkForWin(gameBoard.boardArray, currentPlayer)) {
+                announceWin();
                 gameSquares.forEach((square) => {
                     square.removeEventListener("click", playerPlayVComputerEasy);
                 });
                 return;
-            };
+            } else if (checkForDraw(gameBoard.boardArray)) {
+                announceDraw();
+                gameSquares.forEach((square) => {
+                    square.removeEventListener("click", playerPlayVComputerEasy);
+                });
+                return;
+            }
             playerSwitch();
             announcements.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
             setTimeout(computerTurnEasy, 550);
         };
     }
 
+    const playerPlayVComputerHard = (e) => {
+        if (e.target.classList.contains("game-square") && currentPlayer.getName() !== "Computer" && !gameBoard.boardArray[e.target.dataset.index]) {
+            e.target.children[0].innerText = currentPlayer.getSymbol();
+            gameBoard.boardArray[e.target.dataset.index] = `${currentPlayer.getSymbol()}`;
+            updateGameDisplay();
+            if (checkForWin(gameBoard.boardArray, currentPlayer)) {
+                announceWin();
+                gameSquares.forEach((square) => {
+                    square.removeEventListener("click", playerPlayVComputerHard);
+                });
+                return;
+            } else if (checkForDraw(gameBoard.boardArray)) {
+                announceDraw();
+                gameSquares.forEach((square) => {
+                    square.removeEventListener("click", playerPlayVComputerHard);
+                });
+                return;
+            }
+            playerSwitch();
+            announcements.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
+            setTimeout(computerTurnHard, 550);
+        };
+    }
+
     const playerPlayTwoPlayer = (e) => {
         if (e.target.classList.contains("game-square") && !gameBoard.boardArray[e.target.dataset.index]) {
-            e.target.children[0].innerText = `${currentPlayer.getSymbol()}`;
-            gameBoard.boardArray[e.target.dataset.index] = `${currentPlayer.getSymbol()}`;
-            const currentPlays = gameBoard.boardArray.map((square, index) => {
-                if (square === `${currentPlayer.getSymbol()}`) {
-                    return index;
-                }
-            }).filter(square => square >= 0);
+            e.target.children[0].innerText = currentPlayer.getSymbol();
+            gameBoard.boardArray[e.target.dataset.index] = currentPlayer.getSymbol();
             updateGameDisplay();
-            checkForWin(currentPlays);
-            if (winOrDraw === true) {
+            if (checkForWin(gameBoard.boardArray, currentPlayer)) {
+                announceWin();
                 gameSquares.forEach((square) => {
                     square.removeEventListener("click", playerPlayTwoPlayer);
                 });
                 return;
-            };
+            } else if (checkForDraw(gameBoard.boardArray)) {
+                announceDraw();
+                gameSquares.forEach((square) => {
+                    square.removeEventListener("click", playerPlayTwoPlayer);
+                });
+                return;
+            }
             playerSwitch();
             announcements.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
         }
@@ -197,23 +321,45 @@ const gameControl = (() => {
         do {
             computerPlay = randPlay();
         } while (gameBoard.boardArray[computerPlay] != null)
-        gameBoard.boardArray[computerPlay] = `${currentPlayer.getSymbol()}`;
-        const currentPlays = gameBoard.boardArray.map((square, index) => {
-            if (square === `${currentPlayer.getSymbol()}`) {
-                return index;
-            }
-        }).filter(square => square >= 0);
+        gameBoard.boardArray[computerPlay] = currentPlayer.getSymbol();
         updateGameDisplay();
-        checkForWin(currentPlays);
-        if (winOrDraw === true) {
+        if (checkForWin(gameBoard.boardArray, currentPlayer)) {
+            announceWin();
             gameSquares.forEach((square) => {
                 square.removeEventListener("click", playerPlayVComputerEasy);
             });
             return;
-        };
+        } else if (checkForDraw(gameBoard.boardArray)) {
+            announceDraw();
+            gameSquares.forEach((square) => {
+                square.removeEventListener("click", playerPlayVComputerEasy);
+            });
+            return;
+        }
         playerSwitch();
         announcements.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
     };
+
+    const computerTurnHard = () => {
+        const moveIndex = bestSpot();
+        gameBoard.boardArray[moveIndex] = currentPlayer.getSymbol();
+        updateGameDisplay();
+        if (checkForWin(gameBoard.boardArray, currentPlayer)) {
+            announceWin();
+            gameSquares.forEach((square) => {
+                square.removeEventListener("click", playerPlayVComputerHard);
+            });
+            return;
+        } else if (checkForDraw(gameBoard.boardArray)) {
+            announceDraw();
+            gameSquares.forEach((square) => {
+                square.removeEventListener("click", playerPlayVComputerHard);
+            });
+            return;
+        }
+        playerSwitch();
+        announcements.innerHTML = `<h1>${currentPlayer.getName()}'s turn</h1>`;
+    }
 
     const gamePlayTwoPlayer = () => {
         twoPlayerFormDiv.style.display = "none";
@@ -232,10 +378,21 @@ const gameControl = (() => {
         });
     };
 
+    const gamePlayOnePlayerHard = () => {
+        onePlayerHardFormDiv.style.display = "none";
+        announcements.style.display = "block";
+        gameSquares.forEach((square) => {
+            square.addEventListener("click", playerPlayVComputerHard);
+        });
+    }
 
 
-    return { updateGameDisplay, gamePlayTwoPlayer, eventListeners, gamePlayOnePlayerEasy, computerTurnEasy, gameSquares }
+
+    return { eventListeners }
 })();
 
 
 gameControl.eventListeners();
+
+
+
